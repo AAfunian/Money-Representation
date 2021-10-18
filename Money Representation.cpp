@@ -12,20 +12,28 @@ enum class Currency {
 };
 class Money {
 public:
+	Money();
 	Money(Currency, long double);
 	Currency get_currency();
 	long int get_money();
-private:
+	friend istream& operator>>(istream&, Money& m);
 	long int convert(long double);
+private:
 	long int cents;
 	Currency currency;
 };
+Money::Money() {
+	currency = Currency::USD;
+	cents = 0;
+}
 Money::Money(Currency curr, long double c) {
 	currency = curr;
 	cents = convert(c);
 }
 long int Money::convert(long double d)
 {
+	d *= 100; /* Per exercise instructions, we receive input as whole currency which is 
+					then converted to cents internally and rounded to the nearest cent */
 	long double remainder = fmod(d, 1);
 	if (remainder < .5) { // truncate/round down to the nearest cent
 		return d - remainder;
@@ -38,6 +46,27 @@ Currency Money::get_currency() {
 }
 long int Money::get_money() {
 	return cents;
+}
+istream& operator>>(istream& is, Money& m) {
+	vector<string> store{ "USD", "DKK", "JPY", "IRR", "EUR", "CHF", "GBP", "AUD", "BRL", "CAD", "EGP", "INR", "SEK", "TRY" };
+	string temp = "";
+	long double amount;
+	cout << "Enter currency abbreviation (3 letters): ";
+	is >> temp;
+	cout << "Enter the amount of currency: ";
+	is >> amount;
+	for (int i = 0; i < temp.size(); ++i) {
+		temp[i] = toupper(temp[i]);
+	}
+	for (int i = 0; i < store.size(); ++i) {
+		if (temp == store[i]) {
+			m.currency = Currency(i);
+			m.cents = m.convert(amount);
+			return is;
+		}
+	}
+	cout << "Error (Money>>)\n";
+	return is;
 }
 ostream& operator<<(ostream& os, Currency c) {
 	vector<string> store {"USD", "DKK", "JPY", "IRR", "EUR", "CHF", "GBP", "AUD", "BRL", "CAD", "EGP", "INR", "SEK", "TRY"};
@@ -56,18 +85,17 @@ ostream& operator<<(ostream& os, Money m) {
 	}
 	bool on = false;
 	if (cpy < 10) on = true;
-
 	on ? cout << m.get_currency() << ' ' << counter << '.' << 0 << cpy : cout << m.get_currency() 
 		<< ' ' << counter << '.' << cpy;
-	return os;
+	return os << '\n';
 }
-/*istream& operator>>(istream& is, long double c) {
-	Money m = Money("USD", 534);
-}*/
 
 int main() {
-	Money test(Currency::CHF, 5332.9);
+	Money test(Currency::USD, 532.9);
 	cout << test;
+	Money test2;
+	cin >> test2;
+	cout << test2;
 
 	return 0;
 }
