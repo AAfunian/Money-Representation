@@ -55,9 +55,7 @@ istream& operator>>(istream& is, Money& m) {
 	is >> temp;
 	cout << "Enter the amount of currency: ";
 	is >> amount;
-	for (int i = 0; i < temp.size(); ++i) {
-		temp[i] = toupper(temp[i]);
-	}
+	for (char& x : temp) x = toupper(x);
 	for (int i = 0; i < store.size(); ++i) {
 		if (temp == store[i]) {
 			m.currency = Currency(i);
