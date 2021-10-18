@@ -51,7 +51,7 @@ istream& operator>>(istream& is, Money& m) {
 	vector<string> store{ "USD", "DKK", "JPY", "IRR", "EUR", "CHF", "GBP", "AUD", "BRL", "CAD", "EGP", "INR", "SEK", "TRY" };
 	string temp = "";
 	long double amount;
-	cout << "Enter currency abbreviation (3 letters): ";
+	cout << "\nEnter currency abbreviation (3 letters): ";
 	is >> temp;
 	cout << "Enter the amount of currency: ";
 	is >> amount;
@@ -79,15 +79,44 @@ ostream& operator<<(ostream& os, Currency c) {
 ostream& operator<<(ostream& os, Money m) {
 	int cpy = m.get_money();
 	int counter = 0;
+	bool neg = false;
+	if (cpy <= 0) {
+		cpy = -cpy;
+		neg = true;
+	}
 	while (cpy >= 100) {
 		counter++;
 		cpy -= 100;
 	}
-	bool on = false;
-	if (cpy < 10) on = true;
-	on ? cout << m.get_currency() << ' ' << counter << '.' << 0 << cpy : cout << m.get_currency() 
-		<< ' ' << counter << '.' << cpy;
-	return os << '\n';
+	bool add_zero = false;
+	if (cpy < 10) add_zero = true;
+	if (!neg) {
+		add_zero ? cout << m.get_currency() << ' ' << counter << '.' << 0 << cpy : cout << m.get_currency()
+			<< ' ' << counter << '.' << cpy;
+	}
+	else {
+		add_zero ? cout << m.get_currency() << " -" << counter << '.' << 0 << cpy : cout << m.get_currency()
+			<< " -" << counter << '.' << cpy;
+	}
+	return os;
+}
+void operator+(Money& x, Money& y) {
+	cout << '\n';
+	if (x.get_currency() == y.get_currency()) {
+		double comb = double(x.get_money()) / 100 + double(y.get_money()) / 100;
+		Money temp(x.get_currency(), comb);
+		cout << x << " + " << y << " = " << temp;
+	}
+	else cout << "Cannot combine different currencies!\n";
+}
+void operator-(Money& x, Money& y) {
+	cout << '\n';
+	if (x.get_currency() == y.get_currency()) {
+		double comb = double(x.get_money()) / 100 - double(y.get_money()) / 100;
+		Money temp(x.get_currency(), comb);
+		cout << x << " - " << y << " = " << temp;
+	}
+	else cout << "Cannot combine different currencies!\n";
 }
 
 int main() {
@@ -96,6 +125,7 @@ int main() {
 	Money test2;
 	cin >> test2;
 	cout << test2;
-
+	test + test2;
+	//test + test2;
 	return 0;
 }
